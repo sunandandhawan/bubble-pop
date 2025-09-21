@@ -8,7 +8,7 @@
   "background_color": "#87ceeb",
   "theme_color": "#87ceeb",
   "orientation": "portrait",
-  "description": "A fun bubble popping game for mobile and PWA.",
+  "description": "Fun toddler game with bubbles, numbers, alphabets, and colors to pop and learn.",
   "categories": ["games"],
   "prefer_related_applications": false,
   "launch_handler": {
