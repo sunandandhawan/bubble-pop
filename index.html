@@ -56,6 +56,13 @@
       display: none;
       z-index: 3;
     }
+    .message {
+      font-size: 50px;
+      color: #222;
+      text-align: center;
+      font-weight: bold;
+      margin-top: 100px;
+    }
   </style>
 </head>
 <body>
@@ -66,7 +73,7 @@
     <button class="menu-btn" data-mode="random">🎲 Random</button>
   </div>
   <main id="game">
-    <div style="font-size: 50px;color: #222;text-align: center;font-weight: bold;margin-top: 75px;">Stops after 50 pops</div>
+    <div class="message">Stops after 50 pops</div>
   </main>
   <button id="pwa-install">Install App</button>
   <script>
@@ -106,7 +113,6 @@
     function spawnBubbles() {
       game.innerHTML = '';
       bubbles = [];
-      score = 0;
 
       const roundMode = getModeForRound();
       const num = Math.floor(Math.random()*5) + 1; // 1–5 bubbles
@@ -179,11 +185,10 @@
       bubbles = bubbles.filter(x => x.el !== b);
       if (bubbles.length === 0) {
         if (score >= 50) {
-          const message = "You Win! Great job!";
+          const message = "Great job!";
           speak(message);
-          game.innerHTML = `<div style="font-size: 50px;color: #222;text-align: center;font-weight: bold;margin-top: 75px;">${message}</div>`;
+          game.innerHTML = `<div class="message">${message}</div>`;
         } else{
-          speak("Great! Next round!");
           setTimeout(spawnBubbles, 1000);
         }
       }
