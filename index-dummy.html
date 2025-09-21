@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#87ceeb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="description" content="A fun bubble popping game for mobile and PWA">
+    <title>Bubble Pop Game</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+        body {
+            margin: 0;
+            background: #87ceeb;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        #gameCanvas {
+            display: block;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2em;
+            color: #333;
+            font-family: Arial, sans-serif;
+            z-index: 2;
+        }
+        #pwa-install {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4caf50;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1em;
+            display: none;
+            z-index: 3;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <canvas id="gameCanvas" width="360" height="640"></canvas>
+    <button id="pwa-install">Install App</button>
+    <script src="game.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

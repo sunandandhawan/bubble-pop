@@ -1,59 +1,200 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#87ceeb">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="description" content="A fun bubble popping game for mobile and PWA">
-    <title>Bubble Pop Game</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <style>
-        body {
-            margin: 0;
-            background: #87ceeb;
-            overflow: hidden;
-            touch-action: manipulation;
-        }
-        #gameCanvas {
-            display: block;
-            margin: 0 auto;
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
-        }
-        #score {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 2em;
-            color: #333;
-            font-family: Arial, sans-serif;
-            z-index: 2;
-        }
-        #pwa-install {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #4caf50;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 1em;
-            display: none;
-            z-index: 3;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#87ceeb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="description" content="A fun bubble popping game for mobile and PWA">
+  <title>Toddler Pop Game</title>
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    html, body {
+      height: 100%; margin: 0; padding: 0;
+      background: #000; color: #fff;
+      font-family: system-ui, sans-serif;
+      -webkit-user-select: none; user-select: none;
+      overscroll-behavior: none; touch-action: none;
+      display: flex; flex-direction: column;
+    }
+    #game {
+      flex: 1; position: relative; overflow: hidden;
+    }
+    .bubble {
+      position: absolute; border-radius: 50%; border: none;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; color: white;
+      text-align: center;
+      box-shadow: 0 6px 16px rgba(0,0,0,.3);
+      transition: transform .1s ease;
+      width: 110px; height: 110px;
+    }
+    .bubble:active { transform: scale(0.9); }
+    .pop { animation: pop .2s ease-out forwards; }
+    @keyframes pop {
+      to { transform: scale(1.3); opacity: 0; }
+    }
+    .menu-btn {
+      padding: 14px 20px; border: none; border-radius: 12px;
+      font-weight: bold; font-size: 16px; cursor: pointer;
+      background: #2563eb; color: #fff;
+      margin: 8px;
+    }
+    #menu { text-align: center; padding: 15px; }
+    #pwa-install {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #4caf50;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1em;
+      display: none;
+      z-index: 3;
+    }
+  </style>
 </head>
 <body>
-    <div id="score">Score: 0</div>
-    <canvas id="gameCanvas" width="360" height="640"></canvas>
-    <button id="pwa-install">Install App</button>
-    <script src="game.js"></script>
-    <script src="pwa.js"></script>
+  <div id="menu">
+    <button class="menu-btn" data-mode="numbers">🔢 Numbers</button>
+    <button class="menu-btn" data-mode="letters">🔤 Alphabets</button>
+    <button class="menu-btn" data-mode="colors">🎨 Colors</button>
+    <button class="menu-btn" data-mode="random">🎲 Random</button>
+    <div id="countDisplay"></div>
+  </div>
+  <main id="game"></main>
+  <button id="pwa-install">Install App</button>
+  <script>
+    const game = document.getElementById('game');
+    const menu = document.getElementById('menu');
+    const countDisplay = document.getElementById('countDisplay');
+
+    let score = 0;
+    let bubbles = [];
+    let currentMode = "";
+
+    const COLORS = ["red","orange","yellow","green","cyan","blue","purple","pink"];
+    const COLOR_CODES = {
+      red: "#ef4444",
+      orange: "#f97316",
+      yellow: "#eab308",
+      green: "#22c55e",
+      cyan: "#06b6d4",
+      blue: "#3b82f6",
+      purple: "#8b5cf6",
+      pink: "#ec4899"
+    };
+
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.pitch = 1; utter.rate = 0.9;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    function getModeForRound() {
+      if (currentMode !== "random") return currentMode;
+      const modes = ["numbers","letters","colors"];
+      return modes[Math.floor(Math.random() * modes.length)];
+    }
+
+    function spawnBubbles() {
+      game.innerHTML = '';
+      bubbles = [];
+      score = 0;
+      countDisplay.textContent = '';
+
+      const roundMode = getModeForRound();
+      const num = Math.floor(Math.random()*5) + 1; // 1–5 bubbles
+      let labels = [];
+
+      if (roundMode === "numbers") {
+        labels = Array.from({length: num}, (_, i) => (i+1).toString());
+      } else if (roundMode === "letters") {
+        labels = Array.from({length: num}, (_, i) => String.fromCharCode(65+i));
+      } else if (roundMode === "colors") {
+        labels = COLORS.slice(0, num);
+      }
+
+      const size = 110;
+      const gap = 20;
+
+      if (roundMode === "colors") {
+        // Place randomly
+        const { width, height } = game.getBoundingClientRect();
+        labels.forEach(label => {
+          const b = document.createElement('button');
+          b.className = 'bubble';
+          b.style.fontSize = "14px"; // smaller font for color names
+          b.style.background = COLOR_CODES[label];
+          b.textContent = label;
+          b.style.left = Math.random() * (width - size - 20) + "px";
+          b.style.top  = Math.random() * (height - size - 20) + "px";
+          b.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            popBubble(b,label);
+          });
+          game.appendChild(b);
+          bubbles.push({el:b,label});
+        });
+      } else {
+        // Grid placement for numbers/letters
+        const cols = Math.min(num, 3);
+        const startX = (game.clientWidth - (cols * size + (cols-1)*gap)) / 2;
+        const startY = (game.clientHeight - (Math.ceil(num/cols) * size + (Math.ceil(num/cols)-1)*gap)) / 2;
+
+        labels.forEach((label, i) => {
+          const row = Math.floor(i / cols);
+          const col = i % cols;
+          const b = document.createElement('button');
+          b.className = 'bubble';
+          b.style.fontSize = "100px"; // large font for toddlers
+          b.style.left = (startX + col*(size+gap)) + 'px';
+          b.style.top  = (startY + row*(size+gap)) + 'px';
+          b.style.background = COLOR_CODES[COLORS[(Math.random()*COLORS.length)|0]];
+          b.textContent = label;
+          b.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            popBubble(b,label);
+          });
+          game.appendChild(b);
+          bubbles.push({el:b,label});
+        });
+      }
+    }
+
+    function popBubble(b,label) {
+      const bubbleObj = bubbles.find(x => x.el === b);
+      if (!bubbleObj) return;
+
+      b.classList.add('pop');
+      setTimeout(() => b.remove(), 200);
+      score++;
+      speak(label);
+      countDisplay.textContent = score;
+      bubbles = bubbles.filter(x => x.el !== b);
+      if (bubbles.length === 0) {
+        setTimeout(spawnBubbles, 800);
+      }
+    }
+
+    // Menu button click
+    document.querySelectorAll('.menu-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentMode = btn.dataset.mode;
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(()=>{});
+        }
+        menu.style.display = "none"; // hide menu after selection
+        spawnBubbles();
+      });
+    });
+  </script>
+  <script src="pwa.js"></script>
 </body>
 </html>
