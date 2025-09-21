@@ -5,17 +5,9 @@ const urlsToCache = [
   './game.js',
   './manifest.json',
   './pwa.js',
+  './sw.js',
   './icon-192.png',
-  './icon-512.png',
-  // Add scope-relative URLs
-  '',
-  '/',
-  'index.html',
-  'game.js',
-  'manifest.json',
-  'pwa.js',
-  'icon-192.png',
-  'icon-512.png'
+  './icon-512.png'
 ];
 
 self.addEventListener('install', event => {
