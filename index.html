@@ -169,6 +169,7 @@
     }
 
     function popBubble(b,label) {
+      reqFullScrn();
       const bubbleObj = bubbles.find(x => x.el === b);
       if (!bubbleObj) return;
 
@@ -183,13 +184,17 @@
       }
     }
 
+    function reqFullScrn() {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(()=>{});
+      }
+    }
+
     // Menu button click
     document.querySelectorAll('.menu-btn').forEach(btn => {
       btn.addEventListener('click', () => {
+        reqFullScrn();
         currentMode = btn.dataset.mode;
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen().catch(()=>{});
-        }
         menu.style.display = "none"; // hide menu after selection
         spawnBubbles();
       });
