@@ -73,7 +73,7 @@
     <button class="menu-btn" data-mode="random">🎲 Random</button>
   </div>
   <main id="game">
-    <div class="message">Stops after 50 pops<br/><br/>🔊</div>
+    <div class="message">Stops after 50 pops<br/><br/>(🔊)</div>
   </main>
   <button id="pwa-install">Install App</button>
   <script>
@@ -84,13 +84,12 @@
     let bubbles = [];
     let currentMode = "";
 
-    const COLORS = ["red","orange","yellow","green","cyan","blue","purple","pink"];
+    const COLORS = ["red","orange","yellow","green","blue","purple","pink"];
     const COLOR_CODES = {
       red: "#ef4444",
       orange: "#f97316",
       yellow: "#eab308",
       green: "#22c55e",
-      cyan: "#06b6d4",
       blue: "#3b82f6",
       purple: "#8b5cf6",
       pink: "#ec4899"
@@ -185,7 +184,7 @@
       bubbles = bubbles.filter(x => x.el !== b);
       if (bubbles.length === 0) {
         if (score >= 50) {
-          const message = "Great job!";
+          const message = "Great job baby!";
           speak(message);
           game.innerHTML = `<div class="message">${message}</div>`;
         } else{
