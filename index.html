@@ -12,6 +12,7 @@
   <link rel="manifest" href="manifest.json">
   <style>
     html, body {
+      overscroll-behavior-x: none; /* disable horizontal nav */
       height: 100%; margin: 0; padding: 0;
       background: #000; color: #fff;
       font-family: system-ui, sans-serif;
@@ -208,6 +209,11 @@
         spawnBubbles();
       });
     });
+
+    history.pushState(null, null, location.href);
+      window.onpopstate = function () {
+      history.go(1); // lock in place
+    };
   </script>
   <script src="pwa.js"></script>
 </body>
