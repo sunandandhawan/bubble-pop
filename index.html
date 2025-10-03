@@ -151,9 +151,9 @@
           bubbles.push({el:b,label});
         });
       } if (roundMode === "words") {
-        const word = customWord || "Mama";
+        const word = customWord || 'Ma,ma';
         const mid = Math.ceil(word.length/2);
-        const labels = [word.slice(0, mid), word.slice(mid)];
+        const labels = word.split(',');
 
         const size = 110, gap = 20;
         const startX = (game.clientWidth - (2*size+gap)) / 2;
@@ -231,7 +231,7 @@
     document.querySelectorAll('.menu-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         if (btn.getAttribute('data-mode') === 'words') {
-          customWord = prompt('Enter 2-syllable word').trim();
+          customWord = prompt('Enter comma separated syllables').trim();
         }
         reqFullScrn();
         currentMode = btn.dataset.mode;
