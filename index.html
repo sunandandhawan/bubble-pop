@@ -72,6 +72,7 @@
     <button class="menu-btn" data-mode="letters">🔤 Alphabets</button>
     <button class="menu-btn" data-mode="colors">🎨 Colors</button>
     <button class="menu-btn" data-mode="random">🎲 Random</button>
+    <button class="menu-btn" data-mode="words">🗣 Words</button>
   </div>
   <main id="game">
     <div class="message">Stops after 50 pops<br/><br/>(🔊)</div>
@@ -80,6 +81,8 @@
   <script>
     const game = document.getElementById('game');
     const menu = document.getElementById('menu');
+    const wordInput = document.getElementById('wordInput');
+    let customWord = "";
 
     let score = 0;
     let bubbles = [];
@@ -147,6 +150,30 @@
           game.appendChild(b);
           bubbles.push({el:b,label});
         });
+      } if (roundMode === "words") {
+        const word = customWord || "Mama";
+        const mid = Math.ceil(word.length/2);
+        const labels = [word.slice(0, mid), word.slice(mid)];
+
+        const size = 110, gap = 20;
+        const startX = (game.clientWidth - (2*size+gap)) / 2;
+        const startY = game.clientHeight/2 - size/2;
+
+        labels.forEach((label, i) => {
+          const b = document.createElement('button');
+          b.className = 'bubble words';
+          b.style.fontSize = "24px";
+          b.style.left = (startX + i*(size+gap)) + "px";
+          b.style.top  = startY + "px";
+          b.style.background = COLOR_CODES[COLORS[(Math.random()*COLORS.length)|0]];
+          b.textContent = label;
+          b.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            popBubble(b,label);
+          });
+          game.appendChild(b);
+          bubbles.push({el:b,label});
+        });
       } else {
         // Grid placement for numbers/letters
         const cols = Math.min(num, 3);
@@ -203,6 +230,9 @@
     // Menu button click
     document.querySelectorAll('.menu-btn').forEach(btn => {
       btn.addEventListener('click', () => {
+        if (btn.getAttribute('data-mode') === 'words') {
+          customWord = prompt('Enter 2-syllable word').trim();
+        }
         reqFullScrn();
         currentMode = btn.dataset.mode;
         menu.style.display = "none"; // hide menu after selection
