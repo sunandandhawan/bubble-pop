@@ -155,16 +155,18 @@
         const mid = Math.ceil(word.length/2);
         const labels = word.split(',');
 
-        const size = 110, gap = 20;
-        const startX = (game.clientWidth - (2*size+gap)) / 2;
-        const startY = game.clientHeight/2 - size/2;
+        const cols = Math.min(labels.length, 3);
+        const startX = (game.clientWidth - (cols * size + (cols-1)*gap)) / 2;
+        const startY = (game.clientHeight - (Math.ceil(num/cols) * size + (Math.ceil(num/cols)-1)*gap)) / 2;
 
         labels.forEach((label, i) => {
+          const row = Math.floor(i / cols);
+          const col = i % cols;
           const b = document.createElement('button');
-          b.className = 'bubble words';
+          b.className = 'bubble';
           b.style.fontSize = "24px";
-          b.style.left = (startX + i*(size+gap)) + "px";
-          b.style.top  = startY + "px";
+          b.style.left = (startX + col*(size+gap)) + 'px';
+          b.style.top  = (startY + row*(size+gap)) + 'px';
           b.style.background = COLOR_CODES[COLORS[(Math.random()*COLORS.length)|0]];
           b.textContent = label;
           b.addEventListener('pointerdown', (e) => {
