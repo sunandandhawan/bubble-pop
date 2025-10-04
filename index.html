@@ -118,7 +118,7 @@
       bubbles = [];
 
       const roundMode = getModeForRound();
-      const num = Math.floor(Math.random()*5) + 1; // 1–5 bubbles
+      let num = Math.floor(Math.random()*5) + 1; // 1–5 bubbles
       let labels = [];
 
       if (roundMode === "numbers") {
@@ -127,6 +127,10 @@
         labels = Array.from({length: num}, (_, i) => String.fromCharCode(65+i));
       } else if (roundMode === "colors") {
         labels = COLORS.slice(0, num);
+      } else if (roundMode === "words") {
+        const word = customWord || 'Ma,ma';
+        labels = word.split(',');
+        num = labels.length;
       }
 
       const size = 110;
@@ -143,32 +147,6 @@
           b.textContent = label;
           b.style.left = Math.random() * (width - size - 20) + "px";
           b.style.top  = Math.random() * (height - size - 20) + "px";
-          b.addEventListener('pointerdown', (e) => {
-            e.preventDefault();
-            popBubble(b,label);
-          });
-          game.appendChild(b);
-          bubbles.push({el:b,label});
-        });
-      } if (roundMode === "words") {
-        const word = customWord || 'Ma,ma';
-        const mid = Math.ceil(word.length/2);
-        const labels = word.split(',');
-
-        const cols = Math.min(labels.length, 3);
-        const startX = (game.clientWidth - (cols * size + (cols-1)*gap)) / 2;
-        const startY = (game.clientHeight - (Math.ceil(num/cols) * size + (Math.ceil(num/cols)-1)*gap)) / 2;
-
-        labels.forEach((label, i) => {
-          const row = Math.floor(i / cols);
-          const col = i % cols;
-          const b = document.createElement('button');
-          b.className = 'bubble';
-          b.style.fontSize = "24px";
-          b.style.left = (startX + col*(size+gap)) + 'px';
-          b.style.top  = (startY + row*(size+gap)) + 'px';
-          b.style.background = COLOR_CODES[COLORS[(Math.random()*COLORS.length)|0]];
-          b.textContent = label;
           b.addEventListener('pointerdown', (e) => {
             e.preventDefault();
             popBubble(b,label);
