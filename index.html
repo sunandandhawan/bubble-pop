@@ -71,8 +71,9 @@
     <button class="menu-btn" data-mode="numbers">🔢 Numbers</button>
     <button class="menu-btn" data-mode="letters">🔤 Alphabets</button>
     <button class="menu-btn" data-mode="colors">🎨 Colors</button>
-    <button class="menu-btn" data-mode="random">🎲 Random</button>
+    <button class="menu-btn" data-mode="random">🎲 Random (Numb / Alph / Colr)</button>
     <button class="menu-btn" data-mode="words">🗣 Words</button>
+    <button class="menu-btn" id="set-baby-name">👶 Set Baby Name</button>
   </div>
   <main id="game">
     <div class="message">Stops after 50 pops<br/><br/>(🔊)</div>
@@ -82,11 +83,12 @@
     const game = document.getElementById('game');
     const menu = document.getElementById('menu');
     const wordInput = document.getElementById('wordInput');
-    let customWord = "";
+    let customWord = "ma,ma";
 
     let score = 0;
     let bubbles = [];
     let currentMode = "";
+    let babyName = localStorage.getItem('babyName') || 'baby';
 
     const COLORS = ["red","orange","yellow","green","blue","purple","pink"];
     const COLOR_CODES = {
@@ -105,6 +107,20 @@
         utter.pitch = 1; utter.rate = 0.9;
         window.speechSynthesis.speak(utter);
       }
+    }
+
+    function setBabyName() {
+      const name = prompt('Enter baby\'s name:', babyName);
+      if (name && name.trim()) {
+        babyName = name.trim();
+        localStorage.setItem('babyName', babyName);
+        updateBabyNameButton();
+      }
+    }
+
+    function updateBabyNameButton() {
+      const button = document.getElementById('set-baby-name');
+      button.textContent = `👶 ${babyName}`;
     }
 
     function getModeForRound() {
@@ -128,7 +144,7 @@
       } else if (roundMode === "colors") {
         labels = COLORS.slice(0, num);
       } else if (roundMode === "words") {
-        const word = customWord || 'Ma,ma';
+        const word = customWord;
         labels = word.split(',');
         num = labels.length;
       }
@@ -192,7 +208,7 @@
       bubbles = bubbles.filter(x => x.el !== b);
       if (bubbles.length === 0) {
         if (score >= 50) {
-          const message = "Great job baby!";
+          const message = `Great job ${babyName}!`;
           speak(message);
           game.innerHTML = `<div class="message">${message}</div>`;
         } else{
@@ -210,8 +226,12 @@
     // Menu button click
     document.querySelectorAll('.menu-btn').forEach(btn => {
       btn.addEventListener('click', () => {
+        if (btn.id === 'set-baby-name') {
+          setBabyName();
+          return;
+        }
         if (btn.getAttribute('data-mode') === 'words') {
-          customWord = prompt('Enter comma separated syllables').trim();
+          customWord = prompt('Enter comma separated syllables', customWord).trim();
         }
         reqFullScrn();
         currentMode = btn.dataset.mode;
@@ -219,6 +239,9 @@
         spawnBubbles();
       });
     });
+
+    // Initialize baby name button text
+    updateBabyNameButton();
 
     history.pushState(null, null, location.href);
       window.onpopstate = function () {
